@@ -1,41 +1,32 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
 
-const KPIS = [
-  { label: "Total Students" },
-  { label: "Present Today" },
-  { label: "Absent Today" },
-  { label: "Fee Collected (Month)" },
-  { label: "Fee Outstanding (Month)" },
-];
+import { useAuthStore } from "@/store/auth-store";
+import { TeacherDashboard } from "@/features/dashboard/teacher-dashboard";
+import { AccountantDashboard } from "@/features/dashboard/accountant-dashboard";
+import { FullDashboard } from "@/features/dashboard/full-dashboard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default function DashboardPage() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
-      </div>
+  const status = useAuthStore((s) => s.status);
+  const role = useAuthStore((s) => s.user?.role);
 
-      <div className="rounded-lg border border-primary-100 bg-primary-50 px-4 py-3 text-sm text-primary-700">
-        No data yet — mark today&apos;s attendance to populate this dashboard.
+  if (status !== "authenticated") {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-40" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-24 w-full" />
+          ))}
+        </div>
       </div>
+    );
+  }
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {KPIS.map((kpi) => (
-          <Card key={kpi.label} className="p-5">
-            <p className="text-2xl font-bold tabular-nums text-gray-900">—</p>
-            <p className="mt-1 text-xs text-gray-500">{kpi.label}</p>
-          </Card>
-        ))}
-      </div>
+  if (role === "TEACHER") return <TeacherDashboard />;
+  if (role === "ACCOUNTANT") return <AccountantDashboard />;
+  if (role === "SCHOOL_ADMIN" || role === "PRINCIPAL") return <FullDashboard />;
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Class-wise attendance</CardTitle>
-        </CardHeader>
-        <p className="text-sm text-gray-500">
-          Set up classes and mark attendance to see this table populate.
-        </p>
-      </Card>
-    </div>
-  );
+  return <EmptyState title="No dashboard is set up for this account role yet." />;
 }

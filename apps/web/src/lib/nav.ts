@@ -52,6 +52,8 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/communication",
     roles: ["SCHOOL_ADMIN", "PRINCIPAL", "ACCOUNTANT"],
     children: [
+      { label: "Broadcast Message", href: "/communication/broadcast" },
+      { label: "Message History", href: "/communication/history" },
       { label: "WhatsApp Templates", href: "/communication/templates" },
       { label: "Notification Log", href: "/communication/log" },
     ],
