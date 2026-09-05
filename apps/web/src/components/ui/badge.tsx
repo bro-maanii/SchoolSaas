@@ -33,6 +33,8 @@ export function Badge({ className, tone = "neutral", ...props }: BadgeProps) {
 const STATUS_TONE: Record<string, Tone> = {
   PRESENT: "success",
   PAID: "success",
+  VALID: "success",
+  ACTIVE: "success",
   DELIVERED: "success",
   SENT: "success",
   ABSENT: "danger",

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { MulterError } from "multer";
 import { AppError } from "@/lib/app-error";
 import { logger } from "@/lib/logger";
 
@@ -14,6 +15,15 @@ export function errorMiddleware(
     return res.status(400).json({
       error: { code: "VALIDATION_ERROR", message: "Invalid request", details: err.flatten() },
     });
+  }
+
+  if (err instanceof MulterError) {
+    return res.status(400).json({ error: { code: "UPLOAD_ERROR", message: err.message } });
+  }
+
+  // multer's fileFilter rejects by passing a plain Error, not a MulterError
+  if (err instanceof Error && err.message === "Only .csv files are accepted") {
+    return res.status(400).json({ error: { code: "UPLOAD_ERROR", message: err.message } });
   }
 
   if (err instanceof AppError) {

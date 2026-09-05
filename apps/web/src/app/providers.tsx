@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { useAuthStore } from "@/store/auth-store";
+import { Toaster } from "@/components/ui/toaster";
 
 let browserQueryClient: QueryClient | undefined;
 
@@ -64,6 +65,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthBootstrap>{children}</AuthBootstrap>
+      <Toaster />
     </QueryClientProvider>
   );
 }

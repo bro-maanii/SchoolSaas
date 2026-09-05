@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -191,11 +192,12 @@ model AcademicYear {
 // ---------- Academic structure ----------
 
 model Class {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   schoolId   String
-  school     School @relation(fields: [schoolId], references: [id])
+  school     School  @relation(fields: [schoolId], references: [id])
   name       String
-  orderIndex Int    @default(0)
+  orderIndex Int     @default(0)
+  isArchived Boolean @default(false)
 
   sections           Section[]
   students           Student[]
@@ -203,19 +205,22 @@ model Class {
   attendanceRecords  AttendanceRecord[]
   teacherAssignments TeacherClassAssignment[]
 
+  @@unique([schoolId, name])
   @@index([schoolId])
 }
 
 model Section {
-  id      String @id @default(cuid())
-  classId String
-  class   Class  @relation(fields: [classId], references: [id])
-  name    String
+  id         String  @id @default(cuid())
+  classId    String
+  class      Class   @relation(fields: [classId], references: [id])
+  name       String
+  isArchived Boolean @default(false)
 
   students           Student[]
   attendanceRecords  AttendanceRecord[]
   teacherAssignments TeacherClassAssignment[]
 
+  @@unique([classId, name])
   @@index([classId])
 }
 
@@ -257,6 +262,7 @@ model Guardian {
 
   students StudentGuardian[]
 
+  @@unique([schoolId, phoneE164])
   @@index([schoolId])
 }
 

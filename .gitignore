@@ -25,3 +25,4 @@ coverage/
 
 # prisma
 apps/api/prisma/dev.db
+apps/api/src/generated/
