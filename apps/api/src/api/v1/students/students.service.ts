@@ -4,6 +4,7 @@ import { AppError } from "@/lib/app-error";
 import { getTeacherSectionIds } from "@/lib/teacher-scope";
 import { CreateStudentInput, GuardianInput, ListStudentsQuery, UpdateStudentInput } from "./students.validation";
 import { RawImportRow, validateImportRows } from "./students.import";
+import { generateOneTimeInvoicesForStudent } from "../fees/fees.service";
 
 const studentInclude = {
   class: { select: { id: true, name: true } },
@@ -155,6 +156,14 @@ export async function createStudent(schoolId: string, input: CreateStudentInput)
         include: studentInclude,
       });
 
+      await generateOneTimeInvoicesForStudent(
+        tx,
+        schoolId,
+        student.id,
+        student.classId,
+        student.admissionDate
+      );
+
       return student;
     });
   } catch (err) {
@@ -249,7 +258,7 @@ export async function commitImport(schoolId: string, rows: RawImportRow[]) {
           isPrimary: true,
         });
 
-        await tx.student.create({
+        const student = await tx.student.create({
           data: {
             schoolId,
             classId: row.resolved!.classId,
@@ -261,6 +270,14 @@ export async function commitImport(schoolId: string, rows: RawImportRow[]) {
             guardians: { create: { guardianId: guardian.id, isPrimary: true } },
           },
         });
+
+        await generateOneTimeInvoicesForStudent(
+          tx,
+          schoolId,
+          student.id,
+          student.classId,
+          student.admissionDate
+        );
       });
       created += 1;
     } catch (err) {

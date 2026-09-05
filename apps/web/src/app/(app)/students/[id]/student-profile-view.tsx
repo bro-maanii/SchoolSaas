@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorState } from "@/components/ui/error-state";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useDeactivateStudent, useStudent, useUpdateStudent } from "@/features/students/use-students";
+import { StudentLedgerView } from "@/features/fees/student-ledger-view";
+import { StudentAttendanceHistory } from "@/features/attendance/student-attendance-history";
 import { useAuthStore } from "@/store/auth-store";
 import { toastError, toastSuccess } from "@/store/toast-store";
 import { ApiError } from "@/lib/api-client";
@@ -94,7 +96,7 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
       </div>
 
       <div className="flex gap-1 border-b border-surface-border">
-        {(["overview", "attendance", "fees"] as Tab[]).map((t) => (
+        {(role === "TEACHER" ? (["overview", "attendance"] as Tab[]) : (["overview", "attendance", "fees"] as Tab[])).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -149,21 +151,9 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
         </div>
       )}
 
-      {tab === "attendance" && (
-        <Card>
-          <p className="text-sm text-gray-500">
-            Attendance history will appear here once the Attendance module ships (Phase 4).
-          </p>
-        </Card>
-      )}
+      {tab === "attendance" && <StudentAttendanceHistory studentId={studentId} />}
 
-      {tab === "fees" && (
-        <Card>
-          <p className="text-sm text-gray-500">
-            Fee ledger and payment history will appear here once the Fee module ships (Phase 3).
-          </p>
-        </Card>
-      )}
+      {tab === "fees" && <StudentLedgerView studentId={studentId} />}
 
       <ConfirmDialog
         open={confirmDeactivate}

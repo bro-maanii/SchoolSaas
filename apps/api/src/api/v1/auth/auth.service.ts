@@ -23,13 +23,7 @@ export async function login(input: LoginInput) {
   return {
     accessToken,
     refreshToken,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      schoolId: user.schoolId,
-    },
+    user: await getSessionUser(user.id),
   };
 }
 
@@ -38,12 +32,28 @@ export async function getSessionUser(userId: string) {
   if (!user) {
     throw AppError.unauthorized();
   }
+
+  let teacherAssignments: { classId: string; className: string; sectionId: string; sectionName: string }[] = [];
+  if (user.role === "TEACHER") {
+    const assignments = await prisma.teacherClassAssignment.findMany({
+      where: { userId },
+      include: { class: { select: { name: true } }, section: { select: { name: true } } },
+    });
+    teacherAssignments = assignments.map((a) => ({
+      classId: a.classId,
+      className: a.class.name,
+      sectionId: a.sectionId,
+      sectionName: a.section.name,
+    }));
+  }
+
   return {
     id: user.id,
     name: user.name,
     email: user.email,
     role: user.role,
     schoolId: user.schoolId,
+    teacherAssignments,
   };
 }
 

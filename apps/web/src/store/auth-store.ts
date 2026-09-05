@@ -1,11 +1,19 @@
 import { create } from "zustand";
 
+export type TeacherAssignment = {
+  classId: string;
+  className: string;
+  sectionId: string;
+  sectionName: string;
+};
+
 export type SessionUser = {
   id: string;
   name: string;
   email: string;
   role: "SUPER_ADMIN" | "SCHOOL_ADMIN" | "PRINCIPAL" | "ACCOUNTANT" | "TEACHER";
   schoolId: string | null;
+  teacherAssignments?: TeacherAssignment[];
 };
 
 type AuthState = {

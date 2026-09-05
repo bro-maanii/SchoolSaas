@@ -121,6 +121,8 @@ model School {
   status            SchoolStatus @default(ACTIVE)
   plan              String?
   createdAt         DateTime     @default(now())
+  /// Day-of-week off days, JS Date.getDay() convention (0=Sunday..6=Saturday).
+  weeklyOffDays     Int[]        @default([0])
 
   users              User[]
   classes            Class[]
@@ -325,6 +327,7 @@ model Invoice {
 
   payments Payment[]
 
+  @@unique([studentId, feeCategoryId, periodLabel])
   @@index([schoolId, status, periodLabel])
   @@index([studentId])
 }

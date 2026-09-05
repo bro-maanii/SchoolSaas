@@ -50,10 +50,8 @@ export const NAV_ITEMS: NavItem[] = [
   {
     label: "Communication",
     href: "/communication",
-    roles: ["SCHOOL_ADMIN", "PRINCIPAL"],
+    roles: ["SCHOOL_ADMIN", "PRINCIPAL", "ACCOUNTANT"],
     children: [
-      { label: "Broadcast Message", href: "/communication/broadcast" },
-      { label: "Message History", href: "/communication/history" },
       { label: "WhatsApp Templates", href: "/communication/templates" },
       { label: "Notification Log", href: "/communication/log" },
     ],
@@ -68,8 +66,6 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/settings",
     roles: ["SCHOOL_ADMIN"],
     children: [
-      { label: "School Profile", href: "/settings/profile" },
-      { label: "Users & Roles", href: "/settings/users" },
       { label: "Notification Rules", href: "/settings/notifications" },
       { label: "WhatsApp Connection", href: "/settings/whatsapp" },
     ],
