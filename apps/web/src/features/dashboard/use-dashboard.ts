@@ -56,3 +56,15 @@ export function useClassStrength(enabled = true) {
     enabled,
   });
 }
+
+export function useTodayCollections(params: { classId?: string }, enabled = true) {
+  return useQuery({
+    queryKey: ["dashboard", "today-collections", params],
+    queryFn: () => dashboardApi.getTodayCollections(params),
+    // Someone could record a payment while this is on screen — a short
+    // refetch interval keeps "today's collection" actually live without
+    // needing a manual refresh button.
+    refetchInterval: 30_000,
+    enabled,
+  });
+}

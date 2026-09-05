@@ -75,3 +75,23 @@ export type ClassStrengthRow = {
   className: string;
   studentCount: number;
 };
+
+export type TodayPayment = {
+  id: string;
+  studentId: string;
+  studentName: string;
+  rollNumber: string;
+  className: string;
+  sectionName: string;
+  feeCategory: string;
+  amount: number;
+  method: "CASH" | "BANK" | "OTHER";
+  paidAt: string;
+  receivedBy: string;
+};
+
+export type TodayCollections = {
+  totalCollected: number;
+  studentCount: number;
+  payments: TodayPayment[];
+};

@@ -71,3 +71,15 @@ export async function getClassStrengthHandler(req: Request, res: Response, next:
     next(err);
   }
 }
+
+export async function getTodayCollectionsHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const result = await dashboardService.getTodayCollections(
+      req.auth!.schoolId!,
+      req.query as unknown as Parameters<typeof dashboardService.getTodayCollections>[1]
+    );
+    res.json({ data: result });
+  } catch (err) {
+    next(err);
+  }
+}

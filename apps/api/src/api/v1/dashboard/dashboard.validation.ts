@@ -26,8 +26,13 @@ export const admissionsQuerySchema = z.object({
   classId: z.string().optional(),
 });
 
+export const todayCollectionsQuerySchema = z.object({
+  classId: z.string().optional(),
+});
+
 export type SummaryQuery = z.infer<typeof summaryQuerySchema>;
 export type AttendanceByClassQuery = z.infer<typeof attendanceByClassQuerySchema>;
 export type FeeTrendQuery = z.infer<typeof feeTrendQuerySchema>;
 export type AlertsQuery = z.infer<typeof alertsQuerySchema>;
 export type AdmissionsQuery = z.infer<typeof admissionsQuerySchema>;
+export type TodayCollectionsQuery = z.infer<typeof todayCollectionsQuerySchema>;

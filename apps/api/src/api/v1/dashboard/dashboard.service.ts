@@ -8,6 +8,7 @@ import {
   AttendanceByClassQuery,
   FeeTrendQuery,
   SummaryQuery,
+  TodayCollectionsQuery,
 } from "./dashboard.validation";
 
 function currentPeriodLabel(): string {
@@ -333,4 +334,58 @@ export async function getClassStrength(schoolId: string) {
   });
 
   return classes.map((c) => ({ classId: c.id, className: c.name, studentCount: c._count.students }));
+}
+
+// ---------- Today's fee collection (SCHOOL_ADMIN/PRINCIPAL/ACCOUNTANT) ----------
+
+export async function getTodayCollections(schoolId: string, query: TodayCollectionsQuery) {
+  const start = todayDateOnly();
+  const end = new Date(start.getTime() + 86_400_000);
+
+  const payments = await prisma.payment.findMany({
+    where: {
+      schoolId,
+      paidAt: { gte: start, lt: end },
+      ...(query.classId ? { invoice: { student: { classId: query.classId } } } : {}),
+    },
+    include: {
+      invoice: {
+        select: {
+          studentId: true,
+          feeCategory: { select: { name: true } },
+          student: {
+            select: {
+              fullName: true,
+              rollNumber: true,
+              class: { select: { name: true } },
+              section: { select: { name: true } },
+            },
+          },
+        },
+      },
+      receivedByUser: { select: { name: true } },
+    },
+    orderBy: { paidAt: "desc" },
+  });
+
+  const totalCollected = payments.reduce((sum, p) => sum + toMoney(p.amount), 0);
+  const studentIds = new Set(payments.map((p) => p.invoice.studentId));
+
+  return {
+    totalCollected: Math.round(totalCollected * 100) / 100,
+    studentCount: studentIds.size,
+    payments: payments.map((p) => ({
+      id: p.id,
+      studentId: p.invoice.studentId,
+      studentName: p.invoice.student.fullName,
+      rollNumber: p.invoice.student.rollNumber,
+      className: p.invoice.student.class.name,
+      sectionName: p.invoice.student.section.name,
+      feeCategory: p.invoice.feeCategory.name,
+      amount: toMoney(p.amount),
+      method: p.method,
+      paidAt: p.paidAt,
+      receivedBy: p.receivedByUser.name,
+    })),
+  };
 }

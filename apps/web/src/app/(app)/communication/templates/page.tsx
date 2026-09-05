@@ -70,8 +70,8 @@ function TemplateCard({ template, canEdit }: { template: MessageTemplate; canEdi
 
   return (
     <Card>
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-sm font-semibold text-gray-900">{template.name}</h2>
           <Badge tone="neutral">{CATEGORY_LABEL[template.category] ?? template.category}</Badge>
           <Badge tone="success">{template.approvalStatus}</Badge>

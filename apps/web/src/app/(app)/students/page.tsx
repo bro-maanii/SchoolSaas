@@ -68,10 +68,10 @@ export default function StudentsListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold text-gray-900">Students</h1>
         {canManage && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Link href="/students/import">
               <Button variant="secondary">Bulk Import</Button>
             </Link>
@@ -231,7 +231,7 @@ export default function StudentsListPage() {
             </table>
           </div>
 
-          <div className="mt-3 flex items-center justify-between text-sm text-gray-500">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-gray-500">
             <span>
               {total} student{total === 1 ? "" : "s"}
             </span>

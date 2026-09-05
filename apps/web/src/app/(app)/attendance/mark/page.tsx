@@ -103,7 +103,7 @@ export default function MarkAttendancePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <h1 className="text-lg font-semibold text-gray-900">Mark Attendance</h1>
         <span className="text-sm text-gray-500">
           {new Date(date).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
@@ -195,7 +195,7 @@ export default function MarkAttendancePage() {
         <EmptyState title="No students in this class" />
       ) : roster ? (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             {roster.alreadySubmitted && (
               <span className="text-sm text-gray-500">Attendance already submitted today — edits are saved as corrections.</span>
             )}

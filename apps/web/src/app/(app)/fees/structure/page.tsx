@@ -61,7 +61,7 @@ export default function FeeStructurePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold text-gray-900">Fee Structure</h1>
         {structure?.academicYear && (
           <Badge tone="neutral">Academic year {structure.academicYear.label}</Badge>

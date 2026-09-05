@@ -26,7 +26,7 @@ export default function BroadcastHistoryPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold text-gray-900">Message History</h1>
         <Link href="/communication/broadcast">
           <Button>New Broadcast</Button>
@@ -111,28 +111,30 @@ function BroadcastDetailRows({ id }: { id: string }) {
           {detail.rawBody}
         </div>
       )}
-      <table className="w-full text-sm">
-        <thead className="border-b border-surface-border text-left text-xs font-medium uppercase text-gray-500">
-          <tr>
-            <th className="px-4 py-2">Recipient</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {detail.deliveries.map((d) => (
-            <tr key={d.id} className="border-b border-surface-border last:border-0">
-              <td className="px-4 py-2 tabular-nums text-gray-700">{d.recipientPhone}</td>
-              <td className="px-4 py-2">
-                <StatusBadge status={d.status} />
-              </td>
-              <td className="px-4 py-2 text-gray-500">
-                {new Date(d.updatedAt).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="border-b border-surface-border text-left text-xs font-medium uppercase text-gray-500">
+            <tr>
+              <th className="px-4 py-2">Recipient</th>
+              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Updated</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {detail.deliveries.map((d) => (
+              <tr key={d.id} className="border-b border-surface-border last:border-0">
+                <td className="px-4 py-2 tabular-nums text-gray-700">{d.recipientPhone}</td>
+                <td className="px-4 py-2">
+                  <StatusBadge status={d.status} />
+                </td>
+                <td className="px-4 py-2 text-gray-500">
+                  {new Date(d.updatedAt).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

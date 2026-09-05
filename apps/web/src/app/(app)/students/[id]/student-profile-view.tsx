@@ -64,12 +64,12 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link href="/students" className="text-sm text-gray-500 hover:text-gray-700">
             ← All Students
           </Link>
-          <div className="mt-2 flex items-center gap-3">
+          <div className="mt-2 flex flex-wrap items-center gap-3">
             <h1 className="text-xl font-semibold text-gray-900">{student.fullName}</h1>
             <StatusBadge status={student.status} />
           </div>
@@ -78,7 +78,7 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
           </p>
         </div>
         {canManage && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="secondary" onClick={() => router.push(`/students/${studentId}/edit`)}>
               Edit
             </Button>
@@ -101,7 +101,7 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
             key={t}
             onClick={() => setTab(t)}
             className={cn(
-              "-mb-px border-b-2 px-4 py-2 text-sm font-medium capitalize",
+              "-mb-px border-b-2 px-4 py-2 text-sm font-medium capitalize transition-colors",
               tab === t ? "border-primary-600 text-primary-700" : "border-transparent text-gray-500 hover:text-gray-700"
             )}
           >

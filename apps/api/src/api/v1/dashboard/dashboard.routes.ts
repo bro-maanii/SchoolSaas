@@ -9,6 +9,7 @@ import {
   attendanceByClassQuerySchema,
   feeTrendQuerySchema,
   summaryQuerySchema,
+  todayCollectionsQuerySchema,
 } from "./dashboard.validation";
 import {
   getAdmissionsHandler,
@@ -17,6 +18,7 @@ import {
   getClassStrengthHandler,
   getFeeTrendHandler,
   getSummaryHandler,
+  getTodayCollectionsHandler,
 } from "./dashboard.controller";
 
 // The full multi-widget dashboard is Admin/Principal only. Accountant gets
@@ -58,3 +60,9 @@ dashboardRouter.get(
   getAdmissionsHandler
 );
 dashboardRouter.get("/class-strength", requireRole(FULL_DASHBOARD_ROLES), getClassStrengthHandler);
+dashboardRouter.get(
+  "/today-collections",
+  requireRole(FEE_TREND_ROLES),
+  validateQuery(todayCollectionsQuerySchema),
+  getTodayCollectionsHandler
+);

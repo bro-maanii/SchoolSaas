@@ -16,7 +16,7 @@ export function Toaster() {
           key={toast.id}
           role="alert"
           className={cn(
-            "flex items-center gap-3 rounded-lg border px-4 py-3 text-sm shadow-md",
+            "flex items-center gap-3 rounded-lg border px-4 py-3 text-sm shadow-lg animate-fade-in-up",
             toast.tone === "error"
               ? "border-danger-200 bg-white text-danger-700"
               : "border-success-200 bg-white text-success-700"

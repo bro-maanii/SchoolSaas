@@ -20,6 +20,7 @@ import { StatTile, deltaFromValues } from "@/features/dashboard/stat-tile";
 import { AlertsStrip } from "@/features/dashboard/alerts-strip";
 import { FeeTrendChart } from "@/features/dashboard/fee-trend-chart";
 import { ClassStrengthChart } from "@/features/dashboard/class-strength-chart";
+import { TodayCollectionsWidget } from "@/features/dashboard/today-collections-widget";
 import { formatMoney, currentPeriod, formatPeriodLabel } from "@/lib/format";
 import type { FullSummary } from "@/types/dashboard";
 
@@ -67,9 +68,9 @@ export function FullDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <select
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
@@ -156,6 +157,8 @@ export function FullDashboard() {
           />
         </div>
       )}
+
+      <TodayCollectionsWidget classId={classId || undefined} />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <Card className="lg:col-span-7">

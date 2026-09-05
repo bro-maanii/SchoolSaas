@@ -6,6 +6,7 @@ import type {
   DashboardAlert,
   DashboardSummary,
   FeeTrendPoint,
+  TodayCollections,
 } from "@/types/dashboard";
 
 export type DashboardFilters = { month?: string; classId?: string };
@@ -41,4 +42,8 @@ export function getAdmissions(params: DashboardFilters) {
 
 export function getClassStrength() {
   return api.get<ClassStrengthRow[]>("/dashboard/class-strength");
+}
+
+export function getTodayCollections(params: { classId?: string }) {
+  return api.get<TodayCollections>(`/dashboard/today-collections${buildQuery(params)}`);
 }

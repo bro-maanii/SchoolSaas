@@ -68,7 +68,7 @@ export default function BulkImportPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold text-gray-900">Bulk Import Students</h1>
         <Button variant="secondary" size="sm" onClick={() => downloadImportTemplate()}>
           Download CSV template

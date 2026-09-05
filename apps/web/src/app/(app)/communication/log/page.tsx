@@ -32,9 +32,9 @@ export default function NotificationLogPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold text-gray-900">Notification Log</h1>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Select value={triggerType} onChange={(e) => setTriggerType(e.target.value as TriggerType | "")} className="w-44">
             <option value="">All types</option>
             {!isAccountant && <option value="ABSENCE">Absence</option>}
