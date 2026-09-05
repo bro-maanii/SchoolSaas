@@ -477,20 +477,26 @@ model MessageDelivery {
 // ---------- Training Center (platform-wide, no schoolId) ----------
 
 model TrainingModule {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
+  slug        String  @unique
   featureArea String
   title       String
-  orderIndex  Int    @default(0)
+  description String?
+  orderIndex  Int     @default(0)
 
   items TrainingItem[]
 }
 
 model TrainingItem {
-  id       String         @id @default(cuid())
-  moduleId String
-  module   TrainingModule @relation(fields: [moduleId], references: [id])
-  type     String
-  content  String
+  id         String         @id @default(cuid())
+  moduleId   String
+  module     TrainingModule @relation(fields: [moduleId], references: [id])
+  /// "VIDEO" | "TEXT" | "FAQ"
+  type       String
+  title      String
+  /// Video URL, markdown/plain-text steps, or (for FAQ) the answer — `title` holds the question for FAQ items.
+  content    String
+  orderIndex Int            @default(0)
 
   views TrainingView[]
 }

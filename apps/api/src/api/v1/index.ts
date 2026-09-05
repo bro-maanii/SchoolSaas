@@ -7,6 +7,7 @@ import { attendanceRouter } from "./attendance/attendance.routes";
 import { notificationsRouter } from "./notifications/notifications.routes";
 import { broadcastsRouter } from "./broadcasts/broadcasts.routes";
 import { dashboardRouter } from "./dashboard/dashboard.routes";
+import { trainingRouter } from "./training/training.routes";
 
 export const v1Router = Router();
 
@@ -18,3 +19,4 @@ v1Router.use("/attendance", attendanceRouter);
 v1Router.use("/notifications", notificationsRouter);
 v1Router.use("/broadcasts", broadcastsRouter);
 v1Router.use("/dashboard", dashboardRouter);
+v1Router.use("/training", trainingRouter);
