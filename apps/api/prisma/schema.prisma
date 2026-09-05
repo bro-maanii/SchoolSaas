@@ -1,0 +1,514 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum SchoolStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  SCHOOL_ADMIN
+  PRINCIPAL
+  ACCOUNTANT
+  TEACHER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+}
+
+enum GuardianRelationship {
+  FATHER
+  MOTHER
+  OTHER
+}
+
+enum FeeCategoryType {
+  MONTHLY
+  ANNUAL
+  ADMISSION
+  OTHER
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIAL
+  PAID
+}
+
+enum PaymentMethod {
+  CASH
+  BANK
+  OTHER
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  LEAVE
+}
+
+enum CalendarDayType {
+  HOLIDAY
+  WEEKEND
+}
+
+enum NotificationTriggerType {
+  ABSENCE
+  FEE_REMINDER
+  FEE_OVERDUE
+}
+
+enum MessageTemplateCategory {
+  ABSENCE
+  FEE_REMINDER
+  FEE_OVERDUE
+  ANNOUNCEMENT
+  CUSTOM
+}
+
+enum NotificationJobStatus {
+  PENDING
+  CANCELLED
+  SENT
+  FAILED
+}
+
+enum BroadcastAudienceType {
+  ALL
+  CLASS
+  SECTION
+  STUDENTS
+  ABSENT_TODAY
+  DEFAULTERS
+  STAFF
+}
+
+enum MessageDeliveryStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+// ---------- Core tenant + identity ----------
+
+model School {
+  id                String       @id @default(cuid())
+  name              String
+  address           String?
+  logoUrl           String?
+  academicYearStart DateTime?
+  status            SchoolStatus @default(ACTIVE)
+  plan              String?
+  createdAt         DateTime     @default(now())
+
+  users              User[]
+  classes            Class[]
+  students           Student[]
+  guardians          Guardian[]
+  academicYears      AcademicYear[]
+  feeCategories      FeeCategory[]
+  feeStructureItems  FeeStructureItem[]
+  invoices           Invoice[]
+  payments           Payment[]
+  attendanceRecords  AttendanceRecord[]
+  calendarDays       SchoolCalendarDay[]
+  notificationRules  NotificationRule[]
+  messageTemplates   MessageTemplate[]
+  notificationJobs   NotificationJob[]
+  broadcastCampaigns BroadcastCampaign[]
+  auditLogs          AuditLog[]
+}
+
+model User {
+  id           String     @id @default(cuid())
+  schoolId     String?
+  school       School?    @relation(fields: [schoolId], references: [id])
+  name         String
+  email        String     @unique
+  phone        String?
+  passwordHash String
+  role         UserRole
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+
+  teacherClassAssignments TeacherClassAssignment[]
+  paymentsRecorded        Payment[]                @relation("PaymentReceivedBy")
+  attendanceMarked        AttendanceRecord[]       @relation("AttendanceMarkedBy")
+  notificationJobsQueued  NotificationJob[]
+  broadcastsCreated       BroadcastCampaign[]
+  auditLogs               AuditLog[]
+  trainingViews           TrainingView[]
+
+  @@index([schoolId])
+}
+
+model TeacherClassAssignment {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  classId   String
+  class     Class   @relation(fields: [classId], references: [id])
+  sectionId String
+  section   Section @relation(fields: [sectionId], references: [id])
+
+  @@unique([userId, classId, sectionId])
+}
+
+model AcademicYear {
+  id        String   @id @default(cuid())
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+  label     String
+  startDate DateTime
+  endDate   DateTime
+  isCurrent Boolean  @default(false)
+
+  feeStructureItems FeeStructureItem[]
+
+  @@index([schoolId])
+}
+
+// ---------- Academic structure ----------
+
+model Class {
+  id         String @id @default(cuid())
+  schoolId   String
+  school     School @relation(fields: [schoolId], references: [id])
+  name       String
+  orderIndex Int    @default(0)
+
+  sections           Section[]
+  students           Student[]
+  feeStructureItems  FeeStructureItem[]
+  attendanceRecords  AttendanceRecord[]
+  teacherAssignments TeacherClassAssignment[]
+
+  @@index([schoolId])
+}
+
+model Section {
+  id      String @id @default(cuid())
+  classId String
+  class   Class  @relation(fields: [classId], references: [id])
+  name    String
+
+  students           Student[]
+  attendanceRecords  AttendanceRecord[]
+  teacherAssignments TeacherClassAssignment[]
+
+  @@index([classId])
+}
+
+// ---------- Students & guardians ----------
+
+model Student {
+  id            String        @id @default(cuid())
+  schoolId      String
+  school        School        @relation(fields: [schoolId], references: [id])
+  classId       String
+  class         Class         @relation(fields: [classId], references: [id])
+  sectionId     String
+  section       Section       @relation(fields: [sectionId], references: [id])
+  rollNumber    String
+  fullName      String
+  dob           DateTime?
+  gender        String?
+  admissionDate DateTime      @default(now())
+  status        StudentStatus @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+
+  guardians         StudentGuardian[]
+  invoices          Invoice[]
+  attendanceRecords AttendanceRecord[]
+  notificationJobs  NotificationJob[]
+
+  @@unique([schoolId, classId, rollNumber])
+  @@index([schoolId, classId, sectionId])
+}
+
+model Guardian {
+  id            String               @id @default(cuid())
+  schoolId      String
+  school        School               @relation(fields: [schoolId], references: [id])
+  fullName      String
+  relationship  GuardianRelationship
+  phoneE164     String
+  whatsappOptIn Boolean              @default(true)
+
+  students StudentGuardian[]
+
+  @@index([schoolId])
+}
+
+model StudentGuardian {
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id])
+  guardianId String
+  guardian   Guardian @relation(fields: [guardianId], references: [id])
+  isPrimary  Boolean  @default(false)
+
+  @@id([studentId, guardianId])
+}
+
+// ---------- Fees ----------
+
+model FeeCategory {
+  id          String          @id @default(cuid())
+  schoolId    String
+  school      School          @relation(fields: [schoolId], references: [id])
+  name        String
+  type        FeeCategoryType
+  isRecurring Boolean         @default(false)
+
+  structureItems FeeStructureItem[]
+  invoices       Invoice[]
+
+  @@index([schoolId])
+}
+
+model FeeStructureItem {
+  id             String       @id @default(cuid())
+  schoolId       String
+  school         School       @relation(fields: [schoolId], references: [id])
+  classId        String
+  class          Class        @relation(fields: [classId], references: [id])
+  feeCategoryId  String
+  feeCategory    FeeCategory  @relation(fields: [feeCategoryId], references: [id])
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  amount         Decimal      @db.Decimal(10, 2)
+
+  @@unique([classId, feeCategoryId, academicYearId])
+  @@index([schoolId])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  schoolId      String
+  school        School        @relation(fields: [schoolId], references: [id])
+  studentId     String
+  student       Student       @relation(fields: [studentId], references: [id])
+  feeCategoryId String
+  feeCategory   FeeCategory   @relation(fields: [feeCategoryId], references: [id])
+  periodLabel   String
+  amountDue     Decimal       @db.Decimal(10, 2)
+  amountPaid    Decimal       @default(0) @db.Decimal(10, 2)
+  status        InvoiceStatus @default(UNPAID)
+  dueDate       DateTime
+  createdAt     DateTime      @default(now())
+
+  payments Payment[]
+
+  @@index([schoolId, status, periodLabel])
+  @@index([studentId])
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  schoolId       String
+  school         School        @relation(fields: [schoolId], references: [id])
+  invoiceId      String
+  invoice        Invoice       @relation(fields: [invoiceId], references: [id])
+  amount         Decimal       @db.Decimal(10, 2)
+  method         PaymentMethod
+  receivedBy     String
+  receivedByUser User          @relation("PaymentReceivedBy", fields: [receivedBy], references: [id])
+  paidAt         DateTime      @default(now())
+
+  @@index([schoolId])
+  @@index([invoiceId])
+}
+
+// ---------- Attendance ----------
+
+model AttendanceRecord {
+  id           String           @id @default(cuid())
+  schoolId     String
+  school       School           @relation(fields: [schoolId], references: [id])
+  studentId    String
+  student      Student          @relation(fields: [studentId], references: [id])
+  classId      String
+  class        Class            @relation(fields: [classId], references: [id])
+  sectionId    String
+  section      Section          @relation(fields: [sectionId], references: [id])
+  date         DateTime         @db.Date
+  status       AttendanceStatus
+  markedBy     String
+  markedByUser User             @relation("AttendanceMarkedBy", fields: [markedBy], references: [id])
+  markedAt     DateTime         @default(now())
+  correctedAt  DateTime?
+
+  notificationJobs NotificationJob[]
+
+  @@unique([studentId, date])
+  @@index([schoolId, classId, sectionId, date])
+}
+
+model SchoolCalendarDay {
+  id       String          @id @default(cuid())
+  schoolId String
+  school   School          @relation(fields: [schoolId], references: [id])
+  date     DateTime        @db.Date
+  type     CalendarDayType
+  label    String?
+
+  @@unique([schoolId, date])
+}
+
+// ---------- Notifications & messaging ----------
+
+model NotificationRule {
+  id               String                  @id @default(cuid())
+  schoolId         String
+  school           School                  @relation(fields: [schoolId], references: [id])
+  triggerType      NotificationTriggerType
+  delayMinutes     Int                     @default(60)
+  isEnabled        Boolean                 @default(true)
+  commsWindowStart String                  @default("07:00")
+  commsWindowEnd   String                  @default("18:00")
+
+  @@unique([schoolId, triggerType])
+}
+
+model MessageTemplate {
+  id             String                  @id @default(cuid())
+  schoolId       String
+  school         School                  @relation(fields: [schoolId], references: [id])
+  name           String
+  category       MessageTemplateCategory
+  bodyText       String
+  bspTemplateId  String?
+  approvalStatus String                  @default("PENDING")
+
+  notificationJobs   NotificationJob[]
+  broadcastCampaigns BroadcastCampaign[]
+
+  @@index([schoolId])
+}
+
+model NotificationJob {
+  id                 String                  @id @default(cuid())
+  schoolId           String
+  school             School                  @relation(fields: [schoolId], references: [id])
+  studentId          String?
+  student            Student?                @relation(fields: [studentId], references: [id])
+  triggerType        NotificationTriggerType
+  templateId         String?
+  template           MessageTemplate?        @relation(fields: [templateId], references: [id])
+  scheduledFor       DateTime
+  status             NotificationJobStatus   @default(PENDING)
+  attempts           Int                     @default(0)
+  lastError          String?
+  createdBy          String?
+  createdByUser      User?                   @relation(fields: [createdBy], references: [id])
+  attendanceRecordId String?
+  attendanceRecord   AttendanceRecord?       @relation(fields: [attendanceRecordId], references: [id])
+
+  deliveries MessageDelivery[]
+
+  @@unique([studentId, triggerType, scheduledFor])
+  @@index([schoolId, status])
+}
+
+model BroadcastCampaign {
+  id             String                @id @default(cuid())
+  schoolId       String
+  school         School                @relation(fields: [schoolId], references: [id])
+  createdBy      String
+  createdByUser  User                  @relation(fields: [createdBy], references: [id])
+  audienceType   BroadcastAudienceType
+  audienceFilter Json
+  templateId     String?
+  template       MessageTemplate?      @relation(fields: [templateId], references: [id])
+  rawBody        String?
+  sentAt         DateTime?
+  createdAt      DateTime              @default(now())
+
+  deliveries MessageDelivery[]
+
+  @@index([schoolId])
+}
+
+model MessageDelivery {
+  id                String                @id @default(cuid())
+  campaignId        String?
+  campaign          BroadcastCampaign?    @relation(fields: [campaignId], references: [id])
+  notificationJobId String?
+  notificationJob   NotificationJob?      @relation(fields: [notificationJobId], references: [id])
+  recipientPhone    String
+  status            MessageDeliveryStatus @default(QUEUED)
+  providerMessageId String?
+  error             String?
+  updatedAt         DateTime              @updatedAt
+
+  @@index([campaignId])
+  @@index([notificationJobId])
+}
+
+// ---------- Training Center (platform-wide, no schoolId) ----------
+
+model TrainingModule {
+  id          String @id @default(cuid())
+  featureArea String
+  title       String
+  orderIndex  Int    @default(0)
+
+  items TrainingItem[]
+}
+
+model TrainingItem {
+  id       String         @id @default(cuid())
+  moduleId String
+  module   TrainingModule @relation(fields: [moduleId], references: [id])
+  type     String
+  content  String
+
+  views TrainingView[]
+}
+
+model TrainingView {
+  userId   String
+  user     User         @relation(fields: [userId], references: [id])
+  itemId   String
+  item     TrainingItem @relation(fields: [itemId], references: [id])
+  viewedAt DateTime     @default(now())
+
+  @@id([userId, itemId])
+}
+
+// ---------- Audit ----------
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  schoolId   String?
+  school     School?  @relation(fields: [schoolId], references: [id])
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([schoolId, createdAt])
+}
