@@ -66,8 +66,9 @@ export const NAV_ITEMS: NavItem[] = [
   {
     label: "Settings",
     href: "/settings",
-    roles: ["SCHOOL_ADMIN"],
+    roles: ["SCHOOL_ADMIN", "PRINCIPAL"],
     children: [
+      { label: "Users & Roles", href: "/settings/users" },
       { label: "Notification Rules", href: "/settings/notifications" },
       { label: "WhatsApp Connection", href: "/settings/whatsapp" },
     ],

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -59,10 +60,8 @@ export function Sidebar() {
         )}
       >
         <div className="flex h-14 items-center gap-2 px-5 text-sm font-semibold text-gray-900">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary-600 to-primary-800 text-xs font-bold text-white shadow-sm">
-            S
-          </span>
-          School SaaS
+          <Image src="/logo-icon.png" alt="" width={28} height={28} className="shrink-0" priority />
+          EduManage
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">
           {items.map((item) => {

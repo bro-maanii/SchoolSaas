@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "School SaaS",
-  description: "Attendance, fees, and parent communication for schools.",
+  title: "EduManage",
+  description: "Smarter schools, brighter futures — attendance, fees, and parent communication for schools.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
