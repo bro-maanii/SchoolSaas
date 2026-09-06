@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { api, ApiError } from "@/lib/api-client";
 import { useAuthStore } from "@/store/auth-store";
@@ -46,8 +47,15 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-lg font-semibold text-gray-900">School SaaS</h1>
-          <p className="mt-1 text-sm text-gray-500">Sign in to your school&apos;s dashboard</p>
+          <Image
+            src="/logo-full.png"
+            alt="EduManage"
+            width={800}
+            height={673}
+            className="mx-auto h-auto w-56"
+            priority
+          />
+          <p className="mt-2 text-sm text-gray-500">Sign in to your school&apos;s dashboard</p>
         </div>
 
         <Card>

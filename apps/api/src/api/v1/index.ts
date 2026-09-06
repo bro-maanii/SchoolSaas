@@ -9,6 +9,7 @@ import { broadcastsRouter } from "./broadcasts/broadcasts.routes";
 import { dashboardRouter } from "./dashboard/dashboard.routes";
 import { trainingRouter } from "./training/training.routes";
 import { searchRouter } from "./search/search.routes";
+import { usersRouter } from "./users/users.routes";
 
 export const v1Router = Router();
 
@@ -22,3 +23,4 @@ v1Router.use("/broadcasts", broadcastsRouter);
 v1Router.use("/dashboard", dashboardRouter);
 v1Router.use("/training", trainingRouter);
 v1Router.use("/search", searchRouter);
+v1Router.use("/users", usersRouter);
