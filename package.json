@@ -9,7 +9,7 @@
     "dev:api": "npm run dev --workspace apps/api",
     "build:web": "npm run build --workspace apps/web",
     "build:api": "npm run build --workspace apps/api",
-    "typecheck": "npm run typecheck --workspace apps/api && npm run build --workspace apps/web -- --no-lint"
+    "typecheck": "npm run typecheck --workspace apps/api && npm run build --workspace apps/web"
   },
   "allowScripts": {
     "@prisma/client@6.19.3": true,
